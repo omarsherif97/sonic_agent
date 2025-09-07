@@ -31,13 +31,13 @@ async def main_node(state: sonic_SharedState):
     """Main node for the sonic agent"""
     try:
         # Get the last user message
-        user_message = HumanMessage(content=state["messages"][-1].content)
+        #user_message = HumanMessage(content=state["messages"][-1].content)
         
         # Create system message with the main prompt
         system_message = SystemMessage(content=main_prompt)
         
         # Prepare messages for LLM
-        messages = [system_message, user_message] + state["messages"]
+        messages = [system_message] + state["messages"]
         
         # Get LLM instance
         llm = get_llm()

@@ -28,7 +28,6 @@ ENV PYTHONPATH=/app
 #==================================
 COPY src/ ./src/
 COPY main.py .
-COPY run_chatbot.py .
 
 #==================================
 # Backend Service Configuration

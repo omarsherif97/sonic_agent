@@ -8,12 +8,13 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ../.env
+      - ./env/.env.app
     volumes:
       - ../src:/app/src:rw
-      - ../.env:/app/.env:rw
     networks:
       - seq_sonic_network
+    depends_on:
+      - mongo
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -31,10 +32,9 @@ services:
     ports:
       - "8001:8001"
     env_file:
-      - ../.env
+      - ./env/.env.app
     volumes:
       - ../src:/app/src:rw
-      - ../.env:/app/.env:ro
       - frontend_data:/app/src/Frontend/.files
       - frontend_data:/app/src/Frontend/.chainlit
     depends_on:
@@ -64,6 +64,8 @@ services:
     image: mongo:6.0
     ports:
       - "27017:27017"
+    env_file:
+      - ./env/.env.app
     volumes:
       - mongo_data:/data/db
     networks:

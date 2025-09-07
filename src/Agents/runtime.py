@@ -1,25 +1,25 @@
 # src/Agents/runtime.py
 import os, importlib
-from pymongo import AsyncMongoClient
+from pymongo import MongoClient
 
-from langgraph.checkpoint.mongodb.aio import AsyncMongoDBSaver
+from langgraph.checkpoint.mongodb import MongoDBSaver
 
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://mongo:27017")
 DB_NAME      = os.getenv("MONGODB_DB_NAME", os.getenv("MONGODB_DB", "seq_sonic"))
 
-_client       = AsyncMongoClient(MONGODB_URI)
+_client       = MongoClient(MONGODB_URI)
 _checkpointer = None
 _apps         = {}
 
 async def get_app(key: str, module_path: str):
-    """Return a compiled app (memoized). Compiles with AsyncMongoDBSaver once."""
+    """Return a compiled app (memoized). Compiles with MongoDBSaver once."""
     global _checkpointer
     if key in _apps:
         return _apps[key]
 
     # lazy create the checkpointer inside a running loop
     if _checkpointer is None:
-        _checkpointer = AsyncMongoDBSaver(_client, db_name=DB_NAME)
+        _checkpointer = MongoDBSaver(_client, db_name=DB_NAME)
 
     mod      = importlib.import_module(module_path)
     builder  = getattr(mod, "builder", None)

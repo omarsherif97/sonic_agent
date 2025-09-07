@@ -84,11 +84,19 @@ async def stream_agent_response(agent_input: InputSchema):
                 "callbacks": [tracer],
                 "tags": [f"agent:{agent_input.agent_name}"],
                 "metadata": {"agent": agent_input.agent_name, "thread_id": thread_id},
-                "configurable": {"thread_id": thread_id, "checkpoint_ns": agent_input.agent_name},
+                # Use empty checkpoint namespace to match what's being stored
+                "configurable": {"thread_id": thread_id},
             }
-            state_in = {"messages": incoming_msgs}
-
-            result = await app.ainvoke(state_in, config)
+            
+            # Pass the new message - checkpointer will automatically merge with stored history
+            if incoming_msgs:
+                # Get the latest message to add to conversation
+                new_message = incoming_msgs[-1]
+                # LangGraph with checkpointer will automatically load previous messages
+                # and append this new message to the conversation
+                result = await app.ainvoke({"messages": [new_message]}, config)
+            else:
+                result = {"messages": []}
             output = result["messages"][-1].content if result.get("messages") else ""
 
             # Stream character by character for smooth typing effect
@@ -114,10 +122,18 @@ async def invoke_agent(agent_input: InputSchema) -> OutputSchema:
         "callbacks": [tracer],
         "tags": [f"agent:{agent_input.agent_name}"],
         "metadata": {"agent": agent_input.agent_name, "thread_id": thread_id},
-        "configurable": {"thread_id": thread_id, "checkpoint_ns": agent_input.agent_name},
+        # Use empty checkpoint namespace to match what's being stored
+        "configurable": {"thread_id": thread_id},
     }
-    state_in = {"messages": incoming_msgs}
-
-    result = await app.ainvoke(state_in, config)
+    
+    # Pass the new message - checkpointer will automatically merge with stored history
+    if incoming_msgs:
+        # Get the latest message to add to conversation
+        new_message = incoming_msgs[-1]
+        # LangGraph with checkpointer will automatically load previous messages
+        # and append this new message to the conversation
+        result = await app.ainvoke({"messages": [new_message]}, config)
+    else:
+        result = {"messages": []}
     output = result["messages"][-1].content if result.get("messages") else ""
     return {"AI_Response": output}
