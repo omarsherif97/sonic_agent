@@ -80,7 +80,6 @@ main_sequence_template = """
     <property expression="$body/ExternalServiceRequest/xparam/service_id_aman/text()" name="ServiceCode" scope="default" type="STRING"/>
     <property expression="$body/ExternalServiceRequest/xparam/terminalId/text()" name="terminal" scope="default" type="STRING"/>
     <property expression="$body/ExternalServiceRequest/xparam/productCode/text()" name="productCode" scope="default" type="STRING"/>
-    <class name="com.aman.mediator.(service_name)Mediator">
         <property name="propertyFilePath" value="dev.properties"/>
     </class>
     <switch source="$ctx:ServiceCode">
