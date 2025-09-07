@@ -1,0 +1,10 @@
+"""
+<filter xpath="string-length(get-property('variable_name')) = 0 or get-property('variable_name') = ''">
+    <then>
+        <property name="exceptionCode" scope="default" type="STRING" value=""/>
+        <property name="exceptionMessage" scope="default" type="STRING" value=""/>
+        <sequence key="(SERVICE NAME)-custom-exception"/>
+    </then>
+    <else/>
+</filter>
+"""

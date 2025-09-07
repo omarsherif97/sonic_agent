@@ -1,0 +1,61 @@
+[project]
+user_env = []
+session_timeout = 3600
+user_session_timeout = 1296000
+cache = false
+persist_user_env = false
+mask_user_env = false
+allow_origins = ["*"] # dev only
+
+[features]
+unsafe_allow_html = false
+latex = false
+user_message_autoscroll = true
+auto_tag_thread = true
+edit_message = true
+
+[features.slack]
+reaction_on_message_received = false
+
+[features.spontaneous_file_upload]
+enabled = true
+accept = ["*/*"]
+max_files = 20
+max_size_mb = 500
+
+[features.audio]
+enabled = false
+sample_rate = 24000
+
+[features.mcp]
+enabled = false
+# If you want MCP, set enabled=true and keep the transports below true.
+# Otherwise keep these false to avoid config mismatches.
+[features.mcp.sse]
+enabled = false
+[features.mcp.streamable-http]
+enabled = false
+[features.mcp.stdio]
+enabled = false
+allowed_executables = ["npx", "uvx"]
+
+[UI]
+name = "Assistant"
+# default_theme = "dark"
+# layout = "wide"
+# default_sidebar_state = "open"
+cot = "tool_call"            # "hidden" or "tool_call"; avoid "full" unless you really want it
+custom_css = "/public/seq_sonic.css?v=9" 
+alert_style = "classic"
+logo_file_url = ""
+default_avatar_file_url = ""
+# custom_build = "./public/build"
+# custom_js = "/public/test.js"
+# custom_css_attributes = "media=\"print\""
+# custom_js_attributes = "async type=\"module\""
+# login_page_image = "/public/custom-background.jpg"
+# login_page_image_filter = "brightness-50 grayscale"
+# login_page_image_dark_filter = "contrast-200 blur-sm"
+
+[meta]
+generated_by = "2.7.2"

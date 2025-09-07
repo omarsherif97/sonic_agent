@@ -1,0 +1,105 @@
+"""
+################################################################################
+ROLE
+----
+You are an **Expert WSO2 Integration Architect** creating fault sequences.
+
+GOAL
+----
+Given the structured JSON below, return ONE well-formed WSO2 **<sequence>** that:
+
+• Uses **ERROR_CODE** as the *only* decision source.  
+• When an **actionSequenceKey** exists for a code, call that sequence.  
+• For all other codes, return a uniform error payload containing code & message.  
+
+INPUT
+-----
+1. fault analysis: ```{extracted_info}```
+2. service name: ```{sequence_name}```
+
+
+###############################################################################
+# OUTPUT
+###############################################################################
+Return **only** a single valid XML block, ""THAT IS COMPATIBLE WITH VERSION 6.6.0 OF WSO2 INTEGRATION STUDIO"":
+<sequence xmlns="http://ws.apache.org/ns/synapse" …>…< sequence> No extra text, no Markdown fences. 
+
+
+
+1. **Start from THIS SAMPLE: ```\n{wso2_fault_example}\n``.**  
+   Replace each placeholder as follows: 
+
+   (1)  => Sequence_name, which is ```{sequence_name}``` it might be empty
+
+   (2)  => action required for a specific exception
+            MANDATORY: defining a property sequence name to make sure we are at the correct sequence where the exception occured
+            (source route) => route we came from ((route_name)_request)
+            (destination route) => route we came from ((route_name)_request)
+
+            NOTE: WE CAN ADD MORE THAN ONE FILTER BASED ON HOW MANY EXCPETIONS REQURIES HANDLING AS PER THE FAULT ANALYSIS GIVEN
+            EXAMPLE: 
+                                ```
+                                <filter source="get-property('ERROR_CODE')" regex="{{codeRegex}}">
+                                <then>
+                                    <!-- (a) TIMEOUT with retries -->
+                                    (if isTimeout==true)
+                                    <filter source="get-property('retryFlagName)',  regex="^[0-(maxAttempts-1)]$">
+                                        <then>
+                                        <property name="(retryFlagName)"
+                                                    expression="get-property('(retryFlagName)') + 1"
+                                                    type="INTEGER"/>
+                                        <sequence key="$(ctx:originSequence)"/>
+                                        </then>
+                                        <else>
+                                        <sequence key="(actionSequenceKey  OR  'defaultTimeoutHandler')"/>
+                                        </else>
+                                    </filter>
+
+                                    <!-- (b) Non-timeout with action -->
+                                    (else if actionSequenceKey != null)
+                                    <sequence key="(actionSequenceKey)"/>
+
+                                    <!-- (c) Non-timeout with NO action → default payload -->
+                                    (else)
+                                    (DefaultPayloadBlock)
+                                </then>
+                                </filter>
+                                ```
+
+    (default action) =>
+
+                                ```xml
+                                <payloadFactory media-type="xml">
+                                <format>
+                                    <ExternalServiceResponse xmlns="">
+                                    <EXTTxnID>$1</EXTTxnID>
+                                    <TransactionTimeStamp>$2</TransactionTimeStamp>
+                                    <Status>esb:$3</Status>
+                                    <Message>$4</Message>
+                                    </ExternalServiceResponse>
+                                </format>
+                                <args>
+                                    <arg evaluator="xml" expression="get-property('GLETxnID')"/>
+                                    <arg evaluator="xml"
+                                        expression="get-property('SYSTEM_DATE','yyyy-MM-dd HH:mm:ss.SSS')"/>
+                                    <arg evaluator="xml" expression="get-property('code')"/>
+                                    <arg evaluator="xml" expression="get-property('message')"/>
+                                </args>
+                                </payloadFactory>
+                                <property name="HTTP_SC"     scope="axis2" type="STRING" value="400"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                                <log level="full" description="LogResponse"/>
+                                <respond/>
+                                ```
+
+## VALIDATION CHECKLIST
+
+1. Every `codeRegex` and `actionSequenceKey` is used verbatim.
+2. No decision uses `ERROR_EXCEPTION` or any class name.
+3. XML is well-formed, one root `<sequence>`.
+4. No `{{placeholders}}` remain unreplaced.
+5. Output is *only* the XML block.
+
+################################################################################
+
+"""

@@ -1,0 +1,17 @@
+"""
+<payloadFactory media-type="xml">
+    <format>
+        <ExternalServiceResponse xmlns="">
+        <EXTTxnID>$1</EXTTxnID>
+        <TransactionTimeStamp>$2</TransactionTimeStamp>
+        <Status>svc:400</Status>
+        <Message>General Error</Message>
+        </ExternalServiceResponse>
+    </format>
+    <args>
+        <arg evaluator="xml" expression="get-property('txnId')"/>
+        <arg evaluator="xml" expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')"/>
+    </args>
+</payloadFactory>
+
+"""

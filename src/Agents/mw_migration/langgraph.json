@@ -1,0 +1,9 @@
+{
+    "dependencies": [
+      "."
+    ],
+    "graphs": {
+      "MW_TO_WSO2": "graph:compiled_graph"
+    },
+    "env": ".env"
+}

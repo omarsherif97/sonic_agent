@@ -1,0 +1,146 @@
+package com.raya.aman.reefy.processors;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.raya.aman.logger.AmanLogger;
+import com.raya.aman.util.configuration.PropertyInit;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import com.paymentplaform.raya.gate.BillData;
+import com.paymentplaform.raya.gate.BillDueAmounts;
+import com.paymentplaform.raya.gate.BillDueAmt;
+import com.paymentplaform.raya.gate.PaymentRange;
+import com.paymentplaform.raya.gate.inq.BillInquiryResponse;
+import com.paymentplaform.raya.gate.inq.BillsInquiryResponseType;
+import com.paymentplaform.raya.gatemsg.BillsInquiryResponse;
+import com.paymentplaform.raya.gatemsg.ResponseHeaderType;
+import com.raya.aman.reefy.dto.InquiryResponseDto;
+import com.raya.aman.util.exception.CustomException;
+
+
+public class InquiryResponseHandler implements Processor {
+    private static final String  Nag3_7madi_Aqsat_Inq = "960708";
+    private static final String  Sohag_Aqsat_Inq = "960703";
+    private static final String  Fekra_MF_Inq = "960848";
+    private static final String  FUTURE_BUSINESS_WOMEN_INQ = "960546";
+    private static final String  REGAL_A3MAL_DAKHLIA_INQ = "905168";
+
+
+    @Override
+    public void process(Exchange exchange) throws Exception {
+        InquiryResponseDto response = exchange.getIn().getBody(
+                InquiryResponseDto.class);
+
+        if (response.getStatus() != 202) {
+
+            throw new CustomException(exchange.getContext()
+                    .resolvePropertyPlaceholders("{{timeoutMessage}}"));
+
+        } else {
+            String paymentChannel = (String) exchange
+                    .getProperty("paymentChannel");
+
+            BillsInquiryResponse billsInquiryResponse = new BillsInquiryResponse();
+            ResponseHeaderType headerType = new ResponseHeaderType();
+            billsInquiryResponse.setMessageHeader(headerType);
+
+            // setting response body
+            BillsInquiryResponseType billsInquiryResponseType = new BillsInquiryResponseType();
+            billsInquiryResponse.setMessageBody(billsInquiryResponseType);
+            BillInquiryResponse inquiryResponse = new BillInquiryResponse();
+            billsInquiryResponseType.setBillInquiryResponse(inquiryResponse);
+
+
+            BillInquiryResponse.Bills bills = new BillInquiryResponse.Bills();
+            inquiryResponse.setBills(bills);
+            bills.setBills(new ArrayList<BillInquiryResponse.Bills.Bill>());
+            BillData billData = new BillData();
+            BillInquiryResponse.Bills.Bill bill = new BillInquiryResponse.Bills.Bill();
+            bills.getBills().add(bill);
+            bills.getBills().get(0).setBillData(billData);
+
+            // Due Amount
+            BillDueAmounts billDueAmounts = new BillDueAmounts();
+            billData.setBillDueAmounts(billDueAmounts);
+            billDueAmounts.setBillDueAmts(new ArrayList<BillDueAmt>());
+            billDueAmounts.getBillDueAmts().add(new BillDueAmt());
+            billDueAmounts.getBillDueAmts().get(0)
+                    .setBillDueAmt(Double.valueOf(response.getTotalAmount()));
+
+            // Payment Range
+            PaymentRange paymentRange = new PaymentRange();
+            AmanLogger.logInfo(InquiryResponseHandler.class,"service code : "+paymentChannel.toString());
+            if (paymentChannel.equals(Nag3_7madi_Aqsat_Inq)
+                    || paymentChannel.equals(Sohag_Aqsat_Inq)) {
+                paymentRange.setLower(10d);
+                paymentRange.setUpper(5000d);
+            }
+            else if (paymentChannel.equals(Fekra_MF_Inq)) {
+                paymentRange.setLower(1d);
+                paymentRange.setUpper(Double.valueOf(response.getTotalAmount()));
+            }
+            else if (paymentChannel.equals(FUTURE_BUSINESS_WOMEN_INQ)) {
+                paymentRange.setLower(20.0);
+                paymentRange.setUpper(2500.0);
+            } else if (paymentChannel.equals(REGAL_A3MAL_DAKHLIA_INQ)) {
+                AmanLogger.logInfo(InquiryResponseHandler.class,"we are here");
+                AmanLogger.logInfo(InquiryResponseHandler.class,"lower:"+response.getTotalAmount());
+
+                paymentRange.setLower(Double.valueOf(response.getTotalAmount()));
+                paymentRange.setUpper(Double.valueOf(response.getTotalAmount()));
+
+            } else {
+                paymentRange.setLower(Double.valueOf(response.getMinAmount()));
+                paymentRange.setUpper(Double.valueOf(response.getTotalAmount()));
+            }
+
+            billData.setPaymentRange(paymentRange);
+
+            HashMap<String, String> params = (HashMap<String, String>) exchange
+                    .getProperty("inquiryAttributes");
+
+            if (params == null) {
+
+                params = new HashMap<>();
+                exchange.setProperty("inquiryAttributes", params);
+            }
+
+            params.put("bankAccount", response.getBankAccount());
+            params.put("clientId", response.getClientId());
+            params.put("clientName", response.getClientName());
+            params.put("clientPhone", response.getClientPhone());
+            params.put("dueDate", response.getDueDate());
+            params.put("installmentAmount", response.getInstallmentAamount());
+            params.put("installmentNumber", response.getInstallmentNumber());
+            params.put("insuranceAmount", response.getInsuranceAmount());
+            params.put("penaltyAmount", response.getPenaltyAmount());
+            params.put("minAmount", response.getMinAmount());
+            params.put("totalAmount", response.getTotalAmount());
+            params.put("message", response.getMessage());
+            params.put("remainingAmountOfLoan",
+                    response.getRemainingAmountOfLoan());
+
+
+            params.put("remainingNoInstallments",
+                    response.getRemainingNoInstallments());
+
+            exchange.setProperty("remainingNoInstallments", response.getRemainingNoInstallments());
+
+            AmanLogger.logError(PropertyInit.getLOGGERNAME(), "no of installment",
+                    response.getRemainingNoInstallments());
+
+            params.put("status", "" + response.getStatus());
+
+            params.put("clientNameEcho", response.getClientName());
+            params.put("totalAmountEcho", response.getTotalAmount());
+            params.put("installmentNumberEcho", response.getInstallmentNumber());
+
+            exchange.getIn().setBody(billsInquiryResponse);
+
+        }
+
+    }
+
+}

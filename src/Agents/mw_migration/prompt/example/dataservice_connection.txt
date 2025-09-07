@@ -1,0 +1,50 @@
+"""
+
+MW:
+
+
+```
+CashInOutTransactionLogs log = (CashInOutTransactionLogs) DataAccessManager
+		.queryForObject("cashinout_selectBy",
+				exchange.getProperty("referenceNumber"));
+```
+
+
+
+WSO2:
+
+```
+<filter xpath="string-length(get-property('msisdn')) = 0 or get-property('msisdn') = ''">
+	<then>
+		<property name="exceptionCode" scope="default" type="STRING" value="300001"/>
+		<property name="exceptionMessage" scope="default" type="STRING" value="Missing Bill Reference Number"/>
+		<sequence key="aman-paymob-vodafone-custom-exception"/>
+	</then>
+	<else/>
+</filter>
+<payloadFactory media-type="xml">
+	<format>
+		<soapenv:Envelope xmlns:dat="http://ws.wso2.org/dataservice" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+			<soapenv:Header/>
+				<soapenv:Body>
+				<dat:select_with_key_MERCHANT_WALLET_MAPPER_operation_v1>
+				<dat:MERCHANT_DBID>$1</dat:MERCHANT_DBID>
+				<dat:ISSUER_DBID>Vodafone_Cash</dat:ISSUER_DBID>
+				</dat:select_with_key_MERCHANT_WALLET_MAPPER_operation_v1>
+			</soapenv:Body>
+		</soapenv:Envelope>
+	</format>
+	<args>
+	<arg evaluator="xml" expression="get-property('terminalId')"/>
+	</args>
+</payloadFactory>
+<log description="LogCashInInquirySelectMerchantMsisdnDsRqV1" level="full"/>
+<property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+<property name="ContentType" scope="transport" type="STRING" value="application/xml; charset=UTF-8"/>
+<call>
+	<endpoint key="aman-mw-dataservice-endpoint"/>
+</call>
+
+```
+
+"""

@@ -1,0 +1,21 @@
+"""
+   <MultiOptions>
+      <option>
+         <param>
+         <key>PaymentLowerRange</key><value>$5</value>
+         </param>
+         <param>
+         <key>PaymentUpperRange</key><value>$5</value>
+         </param>
+         <param>
+         <key>GLEPayAmount</key><value>$5</value>
+         </param>
+         <param>
+         <key>TotalBillAmt</key><value>$5</value>
+         </param>
+      </option>
+   </MultiOptions>
+   <args>
+      <arg evaluator="xml" expression="get-property('amount')"/>
+   </args>
+"""

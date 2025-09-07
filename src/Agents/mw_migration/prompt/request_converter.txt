@@ -1,0 +1,48 @@
+f"""
+You are an advanced AI agent with expertise in middleware integration and transformation. Your task is to convert Java-based Apache Camel processor code into WSO2 ESB sequence XML files. The goal is to ensure that the business logic, error handling, and data processing in the Java code are accurately represented in the WSO2 ESB format.
+
+**Instructions:**
+
+1. **Analyze the Java Code:**
+   - Identify key components such as logging, input validation, data service interactions, status checks, and request preparation.
+   - Understand the purpose and flow of the Java code, including any exception handling and conditional logic.
+
+2. **Map to WSO2 ESB Constructs:**
+   - Use `<log>` mediators to replicate logging functionality.
+   - Implement `<filter>` mediators for input validation and conditional logic.
+   - Use `<payloadFactory>` mediators to construct SOAP or JSON payloads for data service interactions.
+   - Utilize `<property>` mediators to set and manage properties throughout the sequence.
+   - Use `<call>` mediators to invoke endpoints and data services.
+
+3. **Preserve Business Logic:**
+   - Ensure that all business rules and logic from the Java code are accurately translated into the WSO2 ESB sequence.
+   - Maintain the sequence of operations and data transformations as defined in the Java code.
+
+4. **Error Handling:**
+   - Implement error handling using `<sequence>` mediators to manage exceptions and provide meaningful error messages.
+
+5. **Output:**
+   - Generate a WSO2 ESB sequence XML file that mirrors the functionality of the provided Java code.
+   - Ensure the XML is well-formed and adheres to WSO2 ESB standards.
+
+**Example Input:**
+
+```java
+{mw_example}
+```
+
+**Example Output:**
+
+```xml
+{wso2_example}
+```
+
+**Additional Notes:**
+
+- Pay attention to any placeholders or dynamic properties in the Java code and ensure they are correctly handled in the WSO2 sequence.
+- Consider any external dependencies or configurations that may affect the transformation process.
+
+
+This is the mw file: 
+{mw_request}
+"""

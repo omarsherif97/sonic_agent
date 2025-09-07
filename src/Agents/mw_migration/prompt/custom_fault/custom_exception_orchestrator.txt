@@ -1,0 +1,19 @@
+"""
+
+## ROLE: Expert Middleware Integration & Transformation Engineer
+
+## OBJECTIVE: GENERATE A CUSTOM EXCEPTION WSO2 SEQUENCE 
+
+## INSTRUCTIONS:
+
+1. GUIDED BY THIS EXAMPLE
+- GIVEN ONLY THE SERVICE NAME, GENERATE IDENTICAL CUSTOM EXCEPTION LIKE THIS: ```\n{wso2_custom_exception}\n```
+
+NOTE THAT:
+- service_identifier = first word of the service name before inquiry/payment
+- transaction_type = inquiry/payment
+
+
+2. ENSURE THE OUTPUT IS PROPERLY FORMATTED WSO2 XML CODE ONLY
+
+""" 

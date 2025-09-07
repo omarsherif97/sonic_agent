@@ -1,0 +1,79 @@
+f"""
+
+## ROLE: Expert Middleware Integration & Transformation Engineer
+
+## OBJECTIVE: Given THE GENERATED WSO2 CODE. CHECK THE CORRECTNESS OF THE GENERATED FILE
+
+## INSTRUCTIONS:
+
+1. GIVEN THIS CODE the generated WSO2 file: ```{wso2_generated_file}```
+
+DID WE COMMIT TO THE BELOW RULES:
+---------------------------
+
+
+### Section A — Source Validity (“Should this parameter even be here?”)
+
+1. **DTO Exclusivity**
+     • Every `<xparam>` entry must map one‑to‑one to a field (or obvious accessor) in a provided DTO Java file.
+     • *Fail if:* a name appears that is absent from all DTOs.
+
+2. **No Shadow Parameters**
+     • A parameter tag in `<xparam>` may read its *value* from the incoming message, but its *definition* must come from the DTO, never from the payload itself or from invention.
+     • *Fail if:* the param exists only because a field was seen in the response body or was invented.
+
+3. **No Duplicates / Case Drift**
+     • Parameter names must be unique and match DTO spelling & case exactly.
+     • *Fail if:* two params differ only by case (e.g., `UserId` vs `userId`) or the same DTO field is declared twice.
+
+4. **Required‑vs‑Optional Alignment**
+     • If the DTO marks a field `@NotNull`, `@Required`, etc., the generated XML must **not** mark it optional; optional DTO fields must be flagged optional when the skeleton supports it.
+     • *Fail if:* a required field is flagged optional, or an optional field is marked mandatory.
+
+---
+
+### Section B — Structural Fidelity (“Is the XML built exactly as the template expects?”)
+
+1. **Args Block Consistency**
+     • Inside each parameter, the number and order of `<arg>` elements must match the template rules (first arg = value, second = scale, etc.).
+     • *Fail if:* arg count/order mismatches, missing evaluator attributes, or incorrect paths.
+
+---
+
+### Section C — Extraction & Runtime (“Will this parameter pull the right value at run‑time?”)
+
+1. **Path Syntax Correctness**
+     • JSONPath expressions must start with `$.`, XPath with `$body/`; no mixing.
+     • *Fail if:* a JSON‑style path is used for XML or vice‑versa.
+
+2. **Path Accuracy**
+     • Each extraction path must point to an existing node in the **incoming message schema** at the moment the `<xparam>` executes (use sample payloads or schema to verify).
+     • *Fail if:* the path targets a non‑existent node, wrong casing, or wrong nesting level.
+
+3. **Constant vs Dynamic Values**
+     • Hard‑coded literals belong in `<value>...</value>` (or equivalent) rather than in an `expression` attribute.
+     • *Fail if:* a literal like `"EGP"` is injected via `expression="'EGP'"` when a constant tag is available.
+
+4. **Side‑Effect Safety**
+     • `<xparam>` blocks must remain declarative—no mediators inside them should mutate message context (e.g., avoid `<property ... action="set"/>`).
+     • *Fail if:* parameter declarations include context‑changing logic.
+
+------------------------
+#NOTE: let us say that
+- service_identifier = first word of the service name before inquiry/payment
+- transaction_type = inquiry/payment
+- knowing that this is the service_name: ```\n{service_name}\n```
+
+- ALWAYS NAME THE SEQUENCE NAME WITH THIS PATTERN: "(service_identifier)-(transaction_type)-request-sequence"
+- ALWAYS NAME THE onError Fault sequence NAME WITH THIS PATTERN: "(service_identifier)-fault-sequence"
+
+
+
+
+
+###############################################################
+## EXPECTED OUTPUT
+Return only the finished `<sequence>` element – nothing else, no comments,
+no Markdown fences.
+
+"""

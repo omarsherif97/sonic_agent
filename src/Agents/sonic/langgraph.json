@@ -1,0 +1,9 @@
+{
+    "dependencies": [
+      "."
+    ],
+    "graphs": {
+      "Job Description Analyzer": "graph:compiled_graph"
+    },
+    "env": ".env"
+}

@@ -1,0 +1,356 @@
+/* src/Frontend/public/seq_sonic.css
+   SEQ_SONIC — Dev Pro Skin (Chainlit)
+   Palette keyed to brand teal: #00ACC4
+   Minimal, developer-friendly, high contrast, code-first
+*/
+
+/* ========== 0) RESET / BASELINE ========== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body, #root {
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ========== 1) DESIGN TOKENS ========== */
+:root {
+  /* ---- Brand (from the logo) ---- */
+  --brand:        #00ACC4; /* core teal */
+  --brand-600:    #0097AB; /* hover/darken */
+  --brand-300:    #22D3EE; /* light tint for rings/hover */
+  --brand-100:    #A9F1FB; /* very light tint */
+
+  /* ---- Backgrounds ---- */
+  --bg-grad-start:#0B141A; /* deep slate */
+  --bg-grad-end:  #0E1E26; /* deep blue-slate */
+
+  /* ---- Bubbles ---- */
+  --assistant-grad-start: var(--brand);
+  --assistant-grad-end:   var(--brand-300);
+
+  /* ---- Surfaces / borders ---- */
+  --surface:        rgba(255,255,255,0.06);
+  --surface-strong: rgba(255,255,255,0.10);
+  --border:         rgba(255,255,255,0.12);
+  --shadow:         0 12px 28px rgba(0, 0, 0, 0.28);
+
+  /* ---- Text ---- */
+  --text:           #E6EAF2;
+  --text-dim:       rgba(230,234,242,0.72);
+
+  /* ---- Accents & focus ---- */
+  --accent:   var(--brand);
+  --accent-2: var(--brand-300);
+  --ring:     var(--brand-300);
+
+  /* ---- Radii & layout ---- */
+  --radius-sm: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --blur: 12px;
+  --trans-fast: 150ms;
+  --trans: 240ms;
+  --max-chat-width: 980px;
+  --gutter: clamp(12px, 2vw, 24px);
+
+  /* ---- Code ---- */
+  --code-bg:    #0A0F14;
+  --code-border:#101826;
+  --code-text:  #E6EDF3;
+
+  /* ---- Typography ---- */
+  --fs-0: 12px;
+  --fs-1: 13px;
+  --fs-2: 14px;
+  --fs-3: 16px;
+  --fs-4: 18px;
+  --fs-5: 22px;
+}
+
+[data-theme="light"] {
+  /* Optional light mode */
+  --bg-grad-start:#F7FBFC;
+  --bg-grad-end:  #EFF7FA;
+  --surface:        rgba(0,0,0,0.04);
+  --surface-strong: rgba(0,0,0,0.06);
+  --border:         rgba(0,0,0,0.12);
+  --text:           #0F1115;
+  --text-dim:       rgba(15,17,21,0.72);
+  --code-bg:    #0F1720;
+  --code-border:#1F2A37;
+  --code-text:  #E5E7EB;
+}
+
+/* ========== 2) APP BACKGROUND & WRAPPER ========== */
+html, body, #root {
+  background:
+    radial-gradient(900px 600px at 10% -20%, rgba(0,172,196,0.12), transparent 45%),
+    linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%) fixed !important;
+  color: var(--text);
+}
+
+#root, [id^="chainlit"], [data-theme] .cl-app, .cl-app {
+  background: transparent !important;
+}
+
+.cl-chat, .chat-container {
+  margin: 0 auto !important;
+  max-width: var(--max-chat-width) !important;
+  padding-inline: var(--gutter) !important;
+}
+
+/* Optional sticky bars if present */
+.cl-header, .cl-toolbar, .cl-footer, .cl-chat-input {
+  position: sticky;
+  z-index: 8;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  border-color: var(--border);
+}
+.cl-header, .cl-toolbar { top: 0; border-bottom: 1px solid var(--border); }
+.cl-footer, .cl-chat-input { bottom: 0; border-top: 1px solid var(--border); }
+
+/* ========== 3) MESSAGE BUBBLES ========== */
+.cl-message, .message, [data-role="assistant"], [data-role="user"] {
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  margin-block: 10px !important;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  padding: 12px 14px !important;
+}
+
+/* Generic glass panel */
+.cl-message, .message {
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* Developer-friendly alignment and skins */
+[data-role="user"], .message.user {
+  margin-left: auto !important;
+  background: #121821 !important;                     /* neutral for user */
+  border: 1px solid #1E2937 !important;
+  color: var(--text) !important;
+}
+[data-role="assistant"], .message.assistant {
+  margin-right: auto !important;
+  background: linear-gradient(135deg,
+              var(--assistant-grad-start) 0%,
+              var(--assistant-grad-end) 100%) !important;
+  color: #071015 !important;                           /* readable on teal */
+}
+
+/* Thin gradient border ring */
+.cl-message::before, .message::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .18;
+  pointer-events: none;
+}
+
+/* Subtle highlight */
+.cl-message::after, .message::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(900px 280px at 0% -10%, rgba(255,255,255,0.12), transparent 45%);
+  pointer-events: none;
+}
+
+/* Message content rhythm */
+.cl-message p, .cl-message div, .message p, .message div {
+  line-height: 1.6; font-size: var(--fs-3);
+}
+.cl-message h1, .message h1 { font-size: clamp(20px, 2.4vw, 28px); margin: .35em 0; }
+.cl-message h2, .message h2 { font-size: clamp(18px, 2vw, 24px);  margin: .35em 0; }
+.cl-message h3, .message h3 { font-size: clamp(16px, 1.8vw, 20px);margin: .35em 0; }
+.cl-message small, .message small { color: var(--text-dim); }
+
+/* System / status */
+[data-role="system"], .message.system, .cl-message[data-author="System"] {
+  background: var(--surface-strong) !important;
+  border-left: 4px solid var(--brand) !important;
+}
+
+/* ========== 4) ACTIONS / BUTTONS ========== */
+button[data-testid="action-button"],
+button[name="select_agent"],
+.cl-message .actions button,
+.cl-action,
+.button,
+button {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: .3px !important;
+  text-transform: uppercase !important;
+  padding: 9px 14px !important;
+  border: 1px solid transparent !important;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-300) 100%) !important;
+  color: #062027 !important;
+  transition: transform var(--trans), box-shadow var(--trans), filter var(--trans) !important;
+  cursor: pointer;
+}
+button[data-testid="action-button"]:hover,
+button[name="select_agent"]:hover,
+.cl-message .actions button:hover,
+.cl-action:hover,
+.button:hover,
+button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 14px 28px rgba(0,0,0,.28) !important;
+  filter: brightness(1.02);
+}
+button[data-testid="action-button"]:active,
+button[name="select_agent"]:active,
+.cl-message .actions button:active,
+.cl-action:active,
+.button:active,
+button:active { transform: translateY(0) scale(.98) !important; }
+button:focus-visible { outline: none !important; box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 55%, transparent) !important; }
+
+/* Ghost / subtle variant (defensive) */
+.button.ghost, .cl-action.ghost {
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ========== 5) INPUTS / COMPOSER ========== */
+input, textarea, select, .cl-textarea, .cl-input {
+  background: var(--surface-strong) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-xl) !important;
+  color: var(--text) !important;
+  padding: 12px 14px !important;
+  transition: border var(--trans-fast), box-shadow var(--trans-fast), background var(--trans-fast) !important;
+  accent-color: var(--brand);
+  font-size: var(--fs-3);
+}
+input::placeholder, textarea::placeholder { color: var(--text-dim) !important; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, .cl-textarea:focus-visible {
+  outline: none !important;
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-300) 30%, transparent) !important;
+}
+
+/* Composer tray */
+.cl-chat-input, .cl-composer { padding: 10px var(--gutter) !important; gap: 10px; }
+
+/* ========== 6) TAGS / AVATARS ========== */
+.cl-tag, .badge, .chip {
+  border-radius: 999px !important;
+  font-size: var(--fs-1) !important;
+  font-weight: 800 !important;
+  padding: 6px 10px !important;
+  background: var(--surface-strong) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+.cl-avatar, .avatar, img[alt*="avatar"] {
+  border-radius: 50% !important;
+  border: 2px solid rgba(255,255,255,0.65) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.28) !important;
+}
+
+/* ========== 7) MARKDOWN / CODE ========== */
+pre, code, pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+pre {
+  background: var(--code-bg) !important;
+  color: var(--code-text) !important;
+  border: 1px solid var(--code-border) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  overflow: auto !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.32) !important;
+}
+code {
+  background: rgba(0,0,0,.28) !important;
+  color: var(--brand-100) !important;
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+blockquote {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--brand);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+table { width: 100%; border-collapse: collapse; font-size: var(--fs-2); }
+thead th { text-align: left; font-weight: 800; background: color-mix(in oklab, var(--surface-strong) 85%, transparent); }
+td, th { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+tr:hover { background: color-mix(in oklab, var(--surface) 55%, transparent); }
+
+/* ========== 8) FILE UPLOADS ========== */
+input[type="file"] {
+  color: var(--text) !important;
+  background: var(--surface-strong) !important;
+  border: 1px dashed var(--border) !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+}
+
+/* ========== 9) SCROLLBARS ========== */
+*::-webkit-scrollbar { height: 12px; width: 12px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--brand), var(--brand-300));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+* { scrollbar-color: var(--brand) transparent; scrollbar-width: thin; }
+
+/* ========== 10) TOASTS / ALERTS ========== */
+.cl-alert, .cl-toast, .toast {
+  border-radius: var(--radius-lg) !important;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  background: var(--surface-strong) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  padding: 10px 12px;
+}
+
+/* ========== 11) LINKS / MISC ========== */
+hr { border-color: var(--border) !important; opacity: .6; }
+a { color: var(--brand-300); text-decoration: underline; }
+a:hover { text-decoration: none; }
+
+/* ========== 12) ANIMATION (subtle) ========== */
+@keyframes lift-in {
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.cl-message, .message { animation: lift-in .22s ease-out; }
+
+/* ========== 13) ACTIONS LAYOUT (inline) ========== */
+.cl-message .actions, [data-testid="action-buttons"] {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}

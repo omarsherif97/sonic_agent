@@ -1,0 +1,25 @@
+f"""
+
+
+## ROLE: Expert Middleware Integration & Transformation Engineer
+
+## OBJECTIVE: create a dataservice connection request to log transaction parameters to a database
+
+
+## INSTRUCTIONS:
+
+1. GIVEN THE MW FILE, EXTRACT PARAMETERS THAT WILL BE SEND TO THE DATASERVICE ENDPOINT
+2. REFER TO THIS EXAMPLE ON HOW TO CREATE A DATASERVICE CONNECTION: {dataservice_example}
+
+
+## EXPECTED OUTPUT:
+1. COMMIT TO THE BELOW JSON STRUCTURE 
+
+```json
+	{{
+		"dataservice_connection_part":""
+	}}
+```
+
+
+"""

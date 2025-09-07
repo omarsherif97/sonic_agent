@@ -1,0 +1,23 @@
+"""
+    <payloadFactory media-type="xml">
+        <format>
+            <ExternalServiceResponse xmlns="">
+                <EXTTxnID>$1</EXTTxnID>
+                <TransactionTimeStamp>$2</TransactionTimeStamp>
+                <Status>$3</Status>
+                <Message>$4</Message>
+                <!--  XPARAM IS MANDATORY -->
+                <xparams>
+                (ERROR DTO PARAMETERS)
+                </xparams>
+            </ExternalServiceResponse>
+        </format>
+        <args>
+            <arg evaluator="xml"
+                    expression="get-property('GLETxnID')"/>
+            <arg evaluator="xml"
+                    expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')"/>
+            <!-- REST OF PARAMETERS -->
+        </args>
+    </payloadFactory>
+"""

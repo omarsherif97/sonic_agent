@@ -1,0 +1,22 @@
+"""
+
+## ROLE: Expert Middleware Integration & Transformation Engineer
+
+## OBJECTIVE: GENERATE A WSO2 MAIN SEQUENCE 
+
+## INSTRUCTIONS:
+
+1. CREATE A MAIN SEQUENCE THAT ROUTES REQUESTS/RESPONSES BASED ON SERVICE CODES
+   - For inquiry operations, use service code: {inquiry_service_code}
+   - For payment operations, use service code: {payment_service_code}
+   - For Service name, use this name: {service_name}
+ 
+
+
+   GIVEN THIS TEMPLATE: ```\n{main_sequence_template}\n```
+   ONLY FEED IT WITH THE INQUIRY, PAYMENT SERVICE CODE AND SERVICE NAME
+
+
+3. ENSURE THE OUTPUT IS PROPERLY FORMATTED WSO2 XML CODE ONLY
+
+""" 

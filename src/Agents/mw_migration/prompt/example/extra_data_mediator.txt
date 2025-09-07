@@ -1,0 +1,6 @@
+"""
+
+<script language="js"><![CDATA[ var root = mc.getPayloadJSON(); var xparams = []; if (root && Array.isArray(root.extraData)) { root.extraData.forEach(function(item) { if (item && item.key !== undefined && item.value !== undefined) { xparams.push('<xparam><key>' + String(item.key) + '</key><value>' + String(item.value) + '</value></xparam>'); } }); } mc.setProperty('extraDataXparams', xparams.join('')); ]]></script>
+
+
+"""

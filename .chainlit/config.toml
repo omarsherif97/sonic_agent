@@ -1,0 +1,63 @@
+[project]
+# Project name
+name = "SEQ_SONIC Chatbot"
+# Project description
+description = "Advanced AI assistant with multiple agents and streaming capabilities"
+# Project icon (emoji or URL)
+icon = "🚀"
+# Project readme
+readme = "chainlit.md"
+
+[UI]
+# UI name
+name = "SEQ_SONIC"
+# UI description  
+description = "Your intelligent AI assistant with agent selection and streaming"
+# UI theme
+theme = "light"
+# UI primary color
+primary_color = "#667eea"
+# UI secondary color
+secondary_color = "#764ba2"
+# UI accent color
+accent_color = "#FF6B6B"
+
+[features]
+# Enable multi-modal
+multi_modal = true
+# Enable streaming
+streaming = true
+# Enable persistence
+persistence = true
+# Enable user feedback
+user_feedback = true
+# Enable chat history
+chat_history = true
+
+[markdown]
+# Enable markdown rendering
+enabled = true
+# Enable code highlighting
+code_highlighting = true
+# Enable math rendering
+math = true
+
+[chat]
+# Enable chat input
+enabled = true
+# Enable file upload
+file_upload = true
+# Enable image upload
+image_upload = true
+# Enable audio upload
+audio_upload = false
+# Enable video upload
+video_upload = false
+
+[security]
+# Enable authentication
+auth = false
+# Enable rate limiting
+rate_limit = false
+# Enable CORS
+cors = true

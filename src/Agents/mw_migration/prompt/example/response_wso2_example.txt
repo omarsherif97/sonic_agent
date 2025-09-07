@@ -1,0 +1,73 @@
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="(5)-inquiry-response" onError="(5)-fault" trace="disable">
+		  
+	<log description="(5) Response" level="custom">
+		<property name="(5)_Response" value="(5) Response"/>
+	</log>
+	
+	<log description="Log(5)Response" level="full"/>
+		 
+	
+	<!--  FOR ANY OTHER PARAMETER TO BE DEFINED-->
+	<!--THIS EXAMPLE OF HOW TO DEFINE A PROPERTY FROM INCOMING RESPONSE TO THIS SEQUENCE -->	 
+	<property expression="json-eval($.(EXAMPLE_PARAMETER)) OR PARAMETER PATH" name="PARAMETER" scope="default" type="STRING"/>
+			  
+	<switch source="$axis2:HTTP_SC"> ==> checking if there is a response returned from the biller or not
+		<case regex="200">
+			<switch source="$ctx:(4)">  => parameter from response body given by the user, that determines whether the response came to the sequence is success or not (double check it through the logic provided)
+				<case regex="VALUE"> => where this value means success as understood from the response body given by the user
+					(0)
+					<payloadFactory media-type="xml">
+						<format>
+							<ExternalServiceResponse xmlns="">
+								<EXTTxnID>$1</EXTTxnID>
+								<TransactionTimeStamp>$2</TransactionTimeStamp>
+								<Status>svc:0</Status>
+								<Message>Successful Transaction</Message>
+								(1)
+								<!-- XPARAM IS MANDATORY -->
+								<xparams>
+								(2)
+								</xparams>
+							</ExternalServiceResponse>
+						</format>
+						<args>
+							<arg evaluator="xml"
+								 expression="get-property('GLETxnID')"/>
+							<arg evaluator="xml"
+								 expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')"/>
+							<!-- REST OF PARAMETERS -->
+						</args>
+					</payloadFactory>
+				</case>
+				<case>
+				(3)
+				</case>
+				OR
+				<default>
+					(3)
+				</default>
+			</switch>
+		</case>
+		<default>
+			<payloadFactory media-type="xml">
+				<format>
+					<ExternalServiceResponse xmlns="">
+					<EXTTxnID>$1</EXTTxnID>
+					<TransactionTimeStamp>$2</TransactionTimeStamp>
+					<Status>svc:400</Status>
+					<Message>General Error</Message>
+					</ExternalServiceResponse>
+				</format>
+				<args>
+					<arg evaluator="xml" expression="get-property('GLETxnID')"/>
+					<arg evaluator="xml" expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')"/>
+				</args>
+			</payloadFactory>
+		</default>
+	</switch>
+	
+	
+	<property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+	<log description="Log(5)Response" level="full"/>
+	<respond/>
+</sequence>

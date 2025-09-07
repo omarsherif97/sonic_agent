@@ -1,0 +1,89 @@
+f"""
+###############################################################################
+#  ROLE
+#  ----
+#  • Expert Middleware Integration & Transformation Engineer
+#
+#  TASK
+#  ----
+#  1. Validate / review a **generated WSO2 Synapse sequence** for full rule-compliance
+#     and return a **corrected <sequence> element** (or the original if no fixes
+#     are required).
+#
+#  INPUTS
+#  ------
+#  • ``{wso2_generated_file}``      – Synapse XML to be reviewed
+#  • ``{incoming_request}``         – sample request body (for XPath / JSONPath)
+#  • ``{configuration_parameters}`` – key-value map of config items
+#  • ``{general_mapper}``           – “logical name ➜ real path” lookup table
+#
+#
+#  VALIDATION RULES
+#  ================
+#  1. Property declarations
+#     1.1  **Every run-time value** (anything not in ```{{configuration_parameters}}```
+#          and not a pure literal) MUST be declared with <property> **before use**.
+#     1.2  If TWO properties obtain their values from the same parameter, leave them as they are.
+#          For properties extracting values from the incoming request: ```{{incoming_request}}```:
+#          - Use proper XPath expressions ($body/...) for XML
+#          - Refer to the mapping table in ```{{general_mapper}}``` to determine the correct extraction path
+#          - Ensure consistent naming between logical variables and their physical counterparts
+#          - Validate that all required properties are properly declared with appropriate scope and type
+#
+#     1.3  Config parameters are **never** created with <property>; they're
+#          fetched only with get-property('param-name').
+#     1.4  Choose the correct scope (e.g. HTTP query ➜ axis2)
+#
+#  2. HTTP headers
+#     • Each <header> needs name=, value=, scope=.
+#     • If the value comes from {{configuration_parameters}}, use:
+#       <header name="…" value="get-property('paramName')" scope="transport"/>
+#
+#  3. Hard-Coded Parameters
+#     • Any hard-coded literal demanded by ``{{external_mediator}}`` must first be
+#       set via <property name="…" value="…"/>.
+#
+#  4. Remove Curly brackets from any static values if present:
+#     • WRONG: <property … value="{{billerNotFound}}"/>
+#       RIGHT: <property … value="billerNotFound"/>
+#
+#  5. Make sure that the provided syntax matches version 6.6.0 of WSO2 Integration Studio.
+#     • Adjust violations but **NEVER CHANGE LOGIC**.
+#
+#  6. Naming & Conventions
+#     6.1  Name APIs, sequences, and endpoints in **kebab-case**  
+#          (e.g. `aman-weaccept-init-payment`) unless overridden by project guidelines.
+#
+#  7. Logging Requirements
+#     7.1  Insert a **mandatory "start-of-sequence" log** at the very top of every
+#          request/response sequence.
+#     7.2  For every external interaction (token, inquiry, payment, check-status)  
+#          you MUST log:
+#          • the **fully-constructed outbound request** (after headers/properties are set); and  
+#          • the **raw response** received from the external endpoint.
+#
+#  8. Header & Property Management
+#     8.1  `header action="remove"` **cannot use wildcards** – list each SOAP header explicitly.
+#     8.2  **Never** add empty `<header scope="…"/>`; every <header> must have a
+#          name **and** value.
+#     8.3  Remove `<header name="CamelHttpMethod" …/>` – we are on **WSO2**, not Apache Camel.
+#
+#  9. Validation & Error Handling
+#     9.1 Filters that test `string-length(get-property('…')) = 0` must reference
+#           properties **guaranteed to exist** (set earlier in the flow).
+#
+# 10. Redundancy & Clean-up
+#     10.1 Remove redundant checks and eliminate unused properties.
+#     10.2 Ensure all referenced properties are defined (set undefined properties).
+#
+# 11. Minimal-change policy
+#     • Edit **only** the lines necessary to fix the violations above.
+#     • Preserve the original ordering, indentation, attributes, and comments.
+#     • Do **not** re-format or prettify the XML.
+#
+#  OUTPUT
+#  ------
+#  • Return one production-ready, well-formed <sequence …> … </sequence> element –  
+#    **no** Markdown, comments, or extra text.
+###############################################################################
+"""

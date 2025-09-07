@@ -1,0 +1,29 @@
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="(1)-(TRANSACTION TYPE Inquiry OR payment)-request" onError="(1)-fault-test" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log description="Aman (1) (TRANSACTION TYPE Inquiry OR payment) Request" level="custom">
+        <property name="(1)_(TRANSACTION TYPE Inquiry OR payment)_Request" value="Starting (1) (TRANSACTION TYPE Inquiry OR payment) Request"/>
+    </log>
+	
+	
+	(2) => properties definition
+	
+	(3) => variables to validate 
+	
+	(4) => define dataservice request (if required) ( validation on input - dataservice call - log response body )(option: extract parameter from response)
+	
+	(5) => script mediators (optional) => used for setting a property that require some logic
+	
+	(6) => external mediators (optional) => used for setting a property that require some logic
+	
+	(7) => DEFINE HTTP HEADERS
+	
+	(8) => formatting JSON request body, (option1: if request_type = POST use payloadFactory, option2= if request_type = GET use HTTP_QUERY) 
+	
+	(9) => calling endpoint
+	
+    <log description="Aman (1) (TRANSACTION TYPE Inquiry OR payment) Request" level="custom">
+        <property name="(1)_(TRANSACTION TYPE Inquiry OR payment)_Request" value="Leaving (1) (TRANSACTION TYPE Inquiry OR payment) Request"/>
+    </log>
+</sequence>
+"""
