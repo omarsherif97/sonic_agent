@@ -58,27 +58,7 @@ EXAMPLE_DIR = "example"
 # UTILITY FUNCTIONS
 # ================================================================================
 
-async def load_file(folder_name: str, file_name: str) -> str:
-    """Load file content from a specified folder"""
-    logger.debug(f"Attempting to load file '{file_name}' from folder '{folder_name}'")
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    prompt_base_dir = os.path.join(base_dir, 'prompt')
-    folder_path = os.path.join(prompt_base_dir, folder_name)
-    full_path = os.path.join(folder_path, file_name)
-    if not os.path.isfile(full_path):
-        logger.error(f"File '{file_name}' not found at path '{full_path}'.")
-        raise FileNotFoundError(f"File '{file_name}' not found in '{folder_path}'. Searched path: {full_path}")
-    try:
-        with asyncio.open(full_path, 'r', encoding='utf-8') as file:
-            content = await file.read()
-            logger.debug(f"Successfully loaded file '{file_name}'. Content length: {len(content)}")
-            return content
-    except Exception as e:
-        logger.error(f"Error reading file '{full_path}': {e}", exc_info=True)
-        raise # Re-raise the exception after logging
-
-
-def load_file_sync(folder_name: str, file_name: str) -> str:
+def load_file(folder_name: str, file_name: str) -> str:
     """Load file content from a specified folder (synchronous version)"""
     logger.debug(f"Attempting to load file '{file_name}' from folder '{folder_name}'")
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -105,33 +85,33 @@ try:
     logger.info("Loading example/template files...")
     
     # Request-related examples
-    request_mw_example = load_file_sync(EXAMPLE_DIR, "request_mw_example.txt")
-    request_wso2_example = load_file_sync(EXAMPLE_DIR, "request_wso2_example.txt")
-    incoming_request = load_file_sync(EXAMPLE_DIR, "incoming_request.txt")
-    sample_request = load_file_sync(EXAMPLE_DIR, "sample_request.txt")
+    request_mw_example = load_file(EXAMPLE_DIR, "request_mw_example.txt")
+    request_wso2_example = load_file(EXAMPLE_DIR, "request_wso2_example.txt")
+    incoming_request = load_file(EXAMPLE_DIR, "incoming_request.txt")
+    sample_request = load_file(EXAMPLE_DIR, "sample_request.txt")
 
     # Response-related examples
-    response_wso2_example = load_file_sync(EXAMPLE_DIR, "response_wso2_example.txt")
-    xparam = load_file_sync(EXAMPLE_DIR, "xparam.txt")
-    MultiOptions = load_file_sync(EXAMPLE_DIR, "MultiOptions.txt")
+    response_wso2_example = load_file(EXAMPLE_DIR, "response_wso2_example.txt")
+    xparam = load_file(EXAMPLE_DIR, "xparam.txt")
+    MultiOptions = load_file(EXAMPLE_DIR, "MultiOptions.txt")
 
     # Dataservice-related examples
-    dataservice_example = load_file_sync(EXAMPLE_DIR, "dataservice_connection.txt")
-    dataservice_varHandler = load_file_sync(EXAMPLE_DIR, "dataservice_varHandler.txt")
+    dataservice_example = load_file(EXAMPLE_DIR, "dataservice_connection.txt")
+    dataservice_varHandler = load_file(EXAMPLE_DIR, "dataservice_varHandler.txt")
 
     # General mapping and handling examples
-    general_mapper = load_file_sync(EXAMPLE_DIR, "general_mapper.txt")
-    variable_handling = load_file_sync(EXAMPLE_DIR, "variable_handling.txt")
+    general_mapper = load_file(EXAMPLE_DIR, "general_mapper.txt")
+    variable_handling = load_file(EXAMPLE_DIR, "variable_handling.txt")
 
     # Failure handling examples
-    dafault_failure_handling = load_file_sync(EXAMPLE_DIR, "dafault_failure_handling.txt")
-    special_failure_handling = load_file_sync(EXAMPLE_DIR, "special_failure_handling.txt")
+    dafault_failure_handling = load_file(EXAMPLE_DIR, "dafault_failure_handling.txt")
+    special_failure_handling = load_file(EXAMPLE_DIR, "special_failure_handling.txt")
 
 
-    wso2_fault_exception = load_file_sync(EXAMPLE_DIR, "wso2-fault.txt")
+    wso2_fault_exception = load_file(EXAMPLE_DIR, "wso2-fault.txt")
     # Additional mediator examples
-    extra_data_mediator = load_file_sync(EXAMPLE_DIR, "extra_data_mediator.txt")
-    multioption_tag_mediator = load_file_sync(EXAMPLE_DIR, "multioption_tag_mediator.txt")
+    extra_data_mediator = load_file(EXAMPLE_DIR, "extra_data_mediator.txt")
+    multioption_tag_mediator = load_file(EXAMPLE_DIR, "multioption_tag_mediator.txt")
     
     logger.info("Example/template files loaded successfully.")
 
@@ -202,16 +182,16 @@ async def generate_wso2_request_sequence(source_code: str, service_name: str, re
         logger.info("Generating WSO2 request sequence for %s", service_name)
 
         # LAYER 1: JAVA SOURCE CODE ANALYSIS
-        source_code_analysis = await load_file(REQUEST_DIR, "java_source_code_analysis.txt").format(
-            java_source_code=source_code
-        )
+        tmpl = load_file(REQUEST_DIR, "java_source_code_analysis.txt")
+        source_code_analysis = tmpl.format(java_source_code=source_code)
+
         
         # Get thinking LLM instance dynamically
         thinking_llm_instance = get_thinking_llm()
         java_analysis = thinking_llm_instance.invoke([SystemMessage(content=source_code_analysis)]).content
                       
         # LAYER 2: BASELINE OUTPUT
-        generation_prompt_template = await load_file(REQUEST_DIR, "request_WSO2_GENERATION.txt")
+        generation_prompt_template = load_file(REQUEST_DIR, "request_WSO2_GENERATION.txt")
 
         prompt = generation_prompt_template.format(
             java_analysis=java_analysis,
@@ -231,17 +211,23 @@ async def generate_wso2_request_sequence(source_code: str, service_name: str, re
 
         # Get LLM instance dynamically
         llm_instance = get_mw_llm()
-        BASELINE_WSO2_CODE = await llm_instance.ainvoke([SystemMessage(content=prompt)]).content
+        response = await llm_instance.ainvoke([SystemMessage(content=prompt)])
+        BASELINE_WSO2_CODE = response.content
         
         # LAYER 3: SELF-REFLECTION
-        reflection_prompt = await load_file(REQUEST_DIR, "SELF_REFLECTION_1.txt").format(
+        # Step 1: Load the reflection template file
+        reflection_template = load_file(REQUEST_DIR, "SELF_REFLECTION_1.txt")
+        
+        # Step 2: Format the template with the required parameters
+        reflection_prompt = reflection_template.format(
             wso2_generated_file=BASELINE_WSO2_CODE,
             configuration_parameters=configuration_parameters,
             general_mapper=general_mapper,
             incoming_request=incoming_request
         )
         # Use same LLM instance for consistency
-        wso2_refined = await llm_instance.ainvoke([SystemMessage(content=reflection_prompt)]).content
+        response = await llm_instance.ainvoke([SystemMessage(content=reflection_prompt)])
+        wso2_refined = response.content
         
         return wso2_refined
 
@@ -260,7 +246,7 @@ async def generate_wso2_dataservice_config(db_logging_logic: str, user_requireme
     try:
         prompt_file = "response_DATASERVICE_GENERATION.txt"
         logger.debug(f"Loading dataservice generation prompt from: {RESPONSE_DIR}/{prompt_file}")
-        prompt_template = await load_file(RESPONSE_DIR, prompt_file)
+        prompt_template = load_file(RESPONSE_DIR, prompt_file)
 
         required_keys_ds = ["dataservice_example"]
         if not all(f"{{{key}}}" in prompt_template for key in required_keys_ds):
@@ -359,7 +345,7 @@ async def generate_wso2_response_sequence(
             """
         prompt_file = "response_WSO2_GENERATION.txt"
         logger.debug(f"Loading response sequence generation prompt from: {RESPONSE_DIR}/{prompt_file}")
-        prompt_template = await load_file(RESPONSE_DIR, prompt_file) 
+        prompt_template = load_file(RESPONSE_DIR, prompt_file) 
 
 
         required_keys_seq = ["wso2_example", "dataservice_code"]
@@ -389,13 +375,14 @@ async def generate_wso2_response_sequence(
         llm_instance = get_mw_llm()
         WSO2_CODE = await llm_instance.ainvoke(messages)
         wso2_generated = WSO2_CODE.content
-        self_reflection = await load_file(RESPONSE_DIR,"RS_SLF_REFLECT.txt")
+        self_reflection = load_file(RESPONSE_DIR,"RS_SLF_REFLECT.txt")
         self_reflection_prompt = self_reflection.format(
             wso2_generated_file=wso2_generated,
             service_name=service_name
         )
         # Use same LLM instance for consistency
-        refined_wso2_code = await llm_instance.ainvoke([SystemMessage(content=self_reflection_prompt)]).content
+        response = await llm_instance.ainvoke([SystemMessage(content=self_reflection_prompt)])
+        refined_wso2_code = response.content
         logger.info(f"Generated response sequence received (start): {refined_wso2_code[:200]}...")
         logger.info("--- Exiting Tool: generate_wso2_response_sequence (Success) ---")
         return refined_wso2_code
@@ -420,7 +407,7 @@ async def generate_wso2_response_sequence(
 #     try:
 #         prompt_file = "fault-analyzer.txt"
 #         logger.debug(f"Loading prompt: {prompt_file}")
-#         prompt_template = await load_file(CUSTOM_FAULT_DIR, prompt_file)
+#         prompt_template = load_file(CUSTOM_FAULT_DIR, prompt_file)
 # 
 #         prompt_text = prompt_template.format(
 #             route_blueprint=source_code,
@@ -432,7 +419,7 @@ async def generate_wso2_response_sequence(
 # 
 #         """
 #         wso2_fault_example = await load_file(EXAMPLE_DIR, "wso2-fault.txt")
-#         sequence_prompt = await load_file(CUSTOM_FAULT_DIR, "fault_sequence_orchestrator.txt")
+#         sequence_prompt = load_file(CUSTOM_FAULT_DIR, "fault_sequence_orchestrator.txt")
 #         sequence_prompt = sequence_prompt.format(
 #             extracted_info=fault_analysis,
 #             sequence_name=sequence_name,
